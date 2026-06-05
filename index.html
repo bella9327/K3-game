@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>一分鐘讀字記錄紙：配對遊戲</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        #game-board {
+            display: grid;
+            grid-template-columns: repeat(4, 150px);
+            grid-gap: 15px;
+            perspective: 1000px; /* 3D 效果 */
+        }
+
+        .card {
+            background-color: #fff;
+            color: #fff;
+            width: 150px;
+            height: 150px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+            cursor: pointer;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .card.flip {
+            transform: rotateY(180deg);
+        }
+
+        .card.match {
+            background-color: #8fbc8f; /* 配對成功的顏色 */
+            cursor: default;
+        }
+
+        .card-front, .card-back {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: bold;
+            border-radius: 10px;
+        }
+
+        .card-front {
+            background-color: #4CAF50; /* 卡片背面的顏色 */
+            color: white;
+            font-size: 60px; /* 卡背顯示一個簡單圖案 */
+        }
+
+        .card-back {
+            background-color: white;
+            color: black;
+            transform: rotateY(180deg);
+            padding: 10px;
+            text-align: center;
+        }
+
+        .word-card {
+            color: #333;
+            font-size: 40px;
+        }
+
+        .image-card img {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 5px;
+        }
+
+        #controls {
+            margin-top: 30px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #008CBA;
+            color: white;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #0077a3;
+        }
+
+        #score-panel {
+            font-size: 20px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>一分鐘讀字記錄紙：配對遊戲</h1>
+
+    <div id="game-board">
+        </div>
+
+    <div id="controls">
+        <button id="restart-btn">重新開始</button>
+        <div id="score-panel">已配對: <span id="matches-count">0</span> / 10</div>
+    </div>
+
+    <script>
+        // 遊戲數據：詞語和其對應的圖片 (使用佔位符圖標)
+        const gameData = [
+            { word: '飛鳥', image: '🕊️' },
+            { word: '小狗', image: '🐶' },
+            { word: '老師', image: '👨‍🏫' },
+            { word: '護士', image: '👩‍⚕️' },
+            { word: '星星', image: '⭐' },
+            { word: '蘋果', image: '🍎' },
+            { word: '月餅', image: '🥮' },
+            { word: '警察', image: '👮' },
+            { word: '太陽', image: '☀️' },
+            { word: '汽車', image: '🚗' }
+        ];
+
+        let cards = [];
+        let hasFlippedCard = false;
+        let lockBoard = false;
+        let firstCard, secondCard;
+        let matchesFound = 0;
+
+        const gameBoard = document.getElementById('game-board');
+        const matchesCountSpan = document.getElementById('matches-count');
+        const restartBtn = document.getElementById('restart-btn');
+
+        // 生成卡片
+        function initGame() {
+            // 清空舊卡片
+            gameBoard.innerHTML = '';
+            matchesFound = 0;
+            matchesCountSpan.textContent = matchesFound;
+            cards = [];
+
+            // 創建一組漢字卡
+            const wordCards = gameData.map(item => ({ ...item, type: 'word' }));
+            // 創建一組圖片卡
+            const imageCards = gameData.map(item => ({ ...item, type: 'image' }));
+
+            // 合併並打亂
+            cards = [...wordCards, ...imageCards].sort(() => 0.5 - Math.random());
+
+            cards.forEach((cardData, index) => {
+                const card = document.createElement('div');
+                card.classList.add('card');
+                card.dataset.id = cardData.word; // 用詞語作為唯一的配對 ID
+                card.dataset.index = index;
+
+                const front = document.createElement('div');
+                front.classList.add('card-front');
+                front.textContent = '?'; // 卡片背面的圖案
+
+                const back = document.createElement('div');
+                back.classList.add('card-back');
+
+                if (cardData.type === 'word') {
+                    back.classList.add('word-card');
+                    back.textContent = cardData.word;
+                } else {
+                    back.classList.add('image-card');
+                    // 這裡使用 Emoji 作為圖片佔位符。
+                    // 若要使用實際圖片，請將此行替換為：
+                    // back.innerHTML = `<img src="path/to/${cardData.word}.png" alt="${cardData.word}">`;
+                    back.textContent = cardData.image; 
+                }
+
+                card.appendChild(front);
+                card.appendChild(back);
+                card.addEventListener('click', flipCard);
+                gameBoard.appendChild(card);
+            });
+        }
+
+        // 翻轉卡片邏輯
+        function flipCard() {
+            if (lockBoard) return;
+            if (this === firstCard) return; // 防止點擊同一張卡片
+
+            this.classList.add('flip');
+
+            if (!hasFlippedCard) {
+                // 第一次點擊
+                hasFlippedCard = true;
+                firstCard = this;
+                return;
+            }
+
+            // 第二次點擊
+            secondCard = this;
+            checkForMatch();
+        }
+
+        // 檢查是否配對
+        function checkForMatch() {
+            let isMatch = firstCard.dataset.id === secondCard.dataset.id;
+            isMatch ? disableCards() : unflipCards();
+        }
+
+        // 配對成功：禁用卡片
+        function disableCards() {
+            firstCard.removeEventListener('click', flipCard);
+            secondCard.removeEventListener('click', flipCard);
+            
+            // 添加配對成功的樣式
+            firstCard.classList.add('match');
+            secondCard.classList.add('match');
+
+            matchesFound++;
+            matchesCountSpan.textContent = matchesFound;
+
+            resetBoard();
+        }
+
+        // 配對失敗：將卡片翻轉回去
+        function unflipCards() {
+            lockBoard = true; // 鎖定面版，防止在翻轉時點擊
+
+            setTimeout(() => {
+                firstCard.classList.remove('flip');
+                secondCard.classList.remove('flip');
+                resetBoard();
+            }, 1000); // 1秒後翻轉回去
+        }
+
+        // 重置變量
+        function resetBoard() {
+            [hasFlippedCard, lockBoard] = [false, false];
+            [firstCard, secondCard] = [null, null];
+        }
+
+        // 重新開始
+        restartBtn.addEventListener('click', initGame);
+
+        // 初始化遊戲
+        initGame();
+
+    </script>
+</body>
+</html>
