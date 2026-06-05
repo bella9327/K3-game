@@ -84,7 +84,7 @@
             aspect-ratio: 1 / 1;
             position: relative;
             transform-style: preserve-3d;
-            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2);
             cursor: pointer;
         }
 
@@ -124,16 +124,15 @@
             padding: 8px;
         }
 
-        /* 答對時的果凍彈跳動畫與綠色邊框 */
+        /* 答對時的綠色邊框提示 */
         .card.match .card-back {
             background-color: #f7fdf9;
             box-shadow: 0 6px 0px #abebd0;
-            animation: jelly 0.6s ease;
         }
         
-        /* 答錯時的搖晃動畫 */
-        .card.shake {
-            animation: shake 0.4s ease;
+        /* 發現錯誤時的果凍彈跳動畫 */
+        .card.wrong-jelly {
+            animation: jelly 0.6s ease-in-out;
         }
 
         /* 漢字樣式：大字、粗體、帶有故事書感 */
@@ -178,20 +177,13 @@
             box-shadow: 0 2px 0px #e0925c;
         }
 
-        /* 果凍彈跳特效 */
+        /* 果凍彈跳特效（保持翻開 180 度狀態下縮放） */
         @keyframes jelly {
             0% { transform: rotateY(180deg) scale(1); }
             30% { transform: rotateY(180deg) scale(1.15, 0.85); }
             40% { transform: rotateY(180deg) scale(0.85, 1.15); }
             60% { transform: rotateY(180deg) scale(1.05, 0.95); }
             100% { transform: rotateY(180deg) scale(1); }
-        }
-
-        /* 答錯搖晃特效 */
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            20%, 60% { transform: translateX(-6px); }
-            40%, 80% { transform: translateX(6px); }
         }
     </style>
 </head>
@@ -205,21 +197,19 @@
             <div id="timer-panel">⏱️ 時間: <span id="timer">0</span> 秒</div>
         </div>
 
-        <div id="game-board">
-            </div>
+        <div id="game-board"></div>
 
         <button id="restart-btn">🍭 重新開始玩</button>
     </div>
 
     <script>
-        // 使用支援跨網域外連、色彩粉嫩高畫質的卡通/手繪風插圖網址
         const gameData = [
-            { word: '飛鳥', image: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjEB932hVgaKyqyxeyF06KSDpf1rdTcb0ThAPck3ITd2-YlUkv1lEg5LP31-hrbM803OSOik5fgjSWVU3rIvq137LvTet6dAKjoIZk_cMvIHitiYuLmmFES0lRBe7xeD2cUIyOkadngF1IH/s800/bird_aoitori_bluebird.png' },     // 可愛小鳥
-            { word: '小狗', image: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEitxnXh3BCHXlUOIPJdO1y51fEPdGCGf9bImEnIUVo_uPy5ECws2w1iAI2wrDs8Sc0oVbtdnYZvFG5UzykV-qvcWamD-Wyj6MOvh6UCTXHPH-5Xf-B5tH-8BqYSvw4roWyud7AgdE_3eXc/s800/pet_omocha_inu.png' },     // 可愛狗狗
-            { word: '老師', image: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhm_E-H-K-_FgN2faRN8GBGyLGYlBRd7ableXu-UkGQQHSUai1QJpssQsdbjG_JgTOsqL0HB5IuINGRf4jtaT5PmprKYOt0fWzFi6THUTi2-JfCDFdHbtnSCRRiWwrlrcTBq-1MMPVzedw/s800/kid_job_girl_teacher.png' },   // 卡通女老師
-            { word: '護士', image: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi0Xif0qqyS8Xu38KMrotkfwCIJlmgjJR5AG9h81a7ZLd9k6qJRgNht3JRXuS7WZwvrCH113634NAm-VUT51gm3C96ieLUcQ_jcds5tkPTOKRhLJ3KStuAKECoi9DscMW8r6TDNwKTlxCs/s800/nurse03_smile.png' },   // 卡通護士小姐
-            { word: '星星', image: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjaSRety8gtS7fw4SZ6uMq1z3J9QNT8Lm7S1MtEKHhB3D0nOvNIPmSo72EhaaWLgF6GnhQNOqyFKG6XL2ceUwwP4bAKJiqk4ngiDbjfgIrBLTuKVGhMJCp8yE9QwjeirNOOOg35IYJpNPJY/s800/small_star7_yellow.png' },   // 軟萌黃色星星
-            { word: '月餅', image: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhT_JHjk1x9QNTcDwrwF3gdhfaK6Scoso10UeoazCdIXYGpn412_2UYSn79CQPrKl0bBs0N9dxQ5TWuVrtvY9kkQUF4dbM8W1S8nBfaHsaSVltIykcDANCHo0JVXXTRGNk1EovoA8IR9n-C/s800/sweets_geppei.png' }    // 點心月餅
+            { word: '飛鳥', image: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjEB932hVgaKyqyxeyF06KSDpf1rdTcb0ThAPck3ITd2-YlUkv1lEg5LP31-hrbM803OSOik5fgjSWVU3rIvq137LvTet6dAKjoIZk_cMvIHitiYuLmmFES0lRBe7xeD2cUIyOkadngF1IH/s800/bird_aoitori_bluebird.png' },
+            { word: '小狗', image: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEitxnXh3BCHXlUOIPJdO1y51fEPdGCGf9bImEnIUVo_uPy5ECws2w1iAI2wrDs8Sc0oVbtdnYZvFG5UzykV-qvcWamD-Wyj6MOvh6UCTXHPH-5Xf-B5tH-8BqYSvw4roWyud7AgdE_3eXc/s800/pet_omocha_inu.png' },
+            { word: '老師', image: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhm_E-H-K-_FgN2faRN8GBGyLGYlBRd7ableXu-UkGQQHSUai1QJpssQsdbjG_JgTOsqL0HB5IuINGRf4jtaT5PmprKYOt0fWzFi6THUTi2-JfCDFdHbtnSCRRiWwrlrcTBq-1MMPVzedw/s800/kid_job_girl_teacher.png' },
+            { word: '護士', image: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi0Xif0qqyS8Xu38KMrotkfwCIJlmgjJR5AG9h81a7ZLd9k6qJRgNht3JRXuS7WZwvrCH113634NAm-VUT51gm3C96ieLUcQ_jcds5tkPTOKRhLJ3KStuAKECoi9DscMW8r6TDNwKTlxCs/s800/nurse03_smile.png' },
+            { word: '星星', image: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjaSRety8gtS7fw4SZ6uMq1z3J9QNT8Lm7S1MtEKHhB3D0nOvNIPmSo72EhaaWLgF6GnhQNOqyFKG6XL2ceUwwP4bAKJiqk4ngiDbjfgIrBLTuKVGhMJCp8yE9QwjeirNOOOg35IYJpNPJY/s800/small_star7_yellow.png' },
+            { word: '月餅', image: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhT_JHjk1x9QNTcDwrwF3gdhfaK6Scoso10UeoazCdIXYGpn412_2UYSn79CQPrKl0bBs0N9dxQ5TWuVrtvY9kkQUF4dbM8W1S8nBfaHsaSVltIykcDANCHo0JVXXTRGNk1EovoA8IR9n-C/s800/sweets_geppei.png' }
         ];
 
         let cards = [];
@@ -262,7 +252,7 @@
 
                 const front = document.createElement('div');
                 front.classList.add('card-front');
-                front.textContent ='👆🏻';//背面改成手指圖案
+                front.textContent = '👆🏻';
     
                 const back = document.createElement('div');
                 back.classList.add('card-back');
@@ -276,7 +266,6 @@
                     img.src = cardData.image;
                     img.alt = cardData.word;
                     
-                    // 防破圖降級機制
                     img.onerror = function() {
                         const fallbacks = { '飛鳥':'🕊️', '小狗':'🐶', '老師':'👨‍🏫', '護士':'👩‍⚕️', '星星':'⭐', '月餅':'🥮' };
                         back.innerHTML = `<span style="font-size: 46px;">${fallbacks[cardData.word] || '🖼️'}</span>`;
@@ -306,7 +295,12 @@
             }
 
             secondCard = this;
-            checkForMatch();
+            
+            // 鎖定面板，直到檢查結束，防止連點干擾動畫
+            lockBoard = true; 
+            
+            // 稍微等待翻牌動畫完成後（約400毫秒），再進行配對判定
+            setTimeout(checkForMatch, 400);
         }
 
         function checkForMatch() {
@@ -335,17 +329,16 @@
         }
 
         function unflipCards() {
-            lockBoard = true;
-            
-            // 答錯時給予卡片輕微搖晃的反饋
-            firstCard.classList.add('shake');
-            secondCard.classList.add('shake');
+            // 發現錯了：先觸發果凍彈跳動畫
+            firstCard.classList.add('wrong-jelly');
+            secondCard.classList.add('wrong-jelly');
 
+            // 讓小朋友有充足時間（1.0秒）看清楚卡片內容並感受彈跳效果，隨後才翻回去
             setTimeout(() => {
-                firstCard.classList.remove('flip', 'shake');
-                secondCard.classList.remove('flip', 'shake');
+                firstCard.classList.remove('flip', 'wrong-jelly');
+                secondCard.classList.remove('flip', 'wrong-jelly');
                 resetBoard();
-            }, 800);
+            }, 1000);
         }
 
         function resetBoard() {
