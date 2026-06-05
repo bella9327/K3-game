@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>一分鐘讀字：配對遊戲 (いらすとや版)</title>
+    <title>一分鐘讀字：童趣繪本配對遊戲</title>
     <style>
+        /* 引入圓潤可愛的 Google 字型 */
+        @import url('https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Noto+Sans+TC:wght@500;700&display=swap');
+
         * {
             box-sizing: border-box;
             -webkit-user-select: none;
@@ -13,55 +16,75 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: #f5f7f8;
+            font-family: 'Noto Sans TC', -apple-system, sans-serif;
+            /* 繪本風溫暖底色，帶有淡淡的雲朵感 */
+            background-color: #fbf6ee; 
+            background-image: radial-gradient(#f0e5d8 1px, transparent 0);
+            background-size: 24px 24px;
             margin: 0;
-            padding: 12px;
+            padding: 15px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         .container {
-            max-width: 500px;
+            width: 100%;
+            max-width: 460px;
             margin: 0 auto;
             text-align: center;
         }
 
+        /* 像繪本標題一樣的設計 */
         h1 {
-            color: #2c3e50;
-            font-size: 20px;
-            margin: 10px 0 15px 0;
+            font-family: 'ZCOOL KuaiLe', 'Noto Sans TC', cursive;
+            color: #6d4c41;
+            font-size: 26px;
+            margin: 5px 0 15px 0;
+            text-shadow: 2px 2px 0px #fff;
+            letter-spacing: 1px;
         }
 
+        /* 溫馨的手繪風資訊欄 */
         #info-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background-color: #ffffff;
-            padding: 10px 15px;
-            border-radius: 12px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            background-color: #fff9f2;
+            padding: 12px 20px;
+            border-radius: 20px;
+            margin-bottom: 18px;
+            border: 3px dashed #dfd3c3;
+            box-shadow: 0 4px 0px #dfd3c3;
         }
 
         #score-panel, #timer-panel {
             font-size: 16px;
-            font-weight: bold;
-            color: #34495e;
+            font-weight: 700;
+            color: #8d6e63;
+        }
+        
+        #timer, #matches-count {
+            font-size: 18px;
+            color: #d87073;
         }
 
         #game-board {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            grid-gap: 10px;
-            perspective: 800px;
-            margin-bottom: 20px;
+            grid-gap: 12px;
+            perspective: 1000px;
+            margin-bottom: 25px;
         }
 
+        /* 卡片主體 */
         .card {
             background-color: transparent;
             aspect-ratio: 1 / 1;
             position: relative;
             transform-style: preserve-3d;
-            transition: transform 0.4s ease-out;
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             cursor: pointer;
         }
 
@@ -77,40 +100,49 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 12px;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+            border-radius: 18px;
         }
 
-        /* 卡片背面：設計成粉藍色粉嫩感 */
+        /* 卡片背面：粉藍色配溫馨小插圖感 */
         .card-front {
-            background: linear-gradient(135deg, #74b9ff, #0984e3);
-            color: white;
-            font-size: 32px;
-            font-weight: bold;
+            background: #aed6f1;
+            border: 4px solid #fff;
+            box-shadow: 0 6px 0px #85b3d1, 0 10px 15px rgba(0,0,0,0.05);
+            color: #fff;
+            font-size: 36px;
+            font-family: 'ZCOOL KuaiLe', sans-serif;
+            text-shadow: 2px 2px 0px #85b3d1;
         }
 
         /* 卡片正面 */
         .card-back {
             background-color: #ffffff;
-            color: #2c3e50;
+            color: #4e342e;
             transform: rotateY(180deg);
-            border: 2px solid #e0e0e0;
-            padding: 8px; /* 留白讓插圖更好看 */
+            border: 4px solid #fff;
+            box-shadow: 0 6px 0px #e0e0e0, 0 10px 15px rgba(0,0,0,0.05);
+            padding: 8px;
         }
 
+        /* 答對時的果凍彈跳動畫與綠色邊框 */
         .card.match .card-back {
-            background-color: #e8f8f5;
-            border-color: #2ecc71;
+            background-color: #f7fdf9;
+            box-shadow: 0 6px 0px #abebd0;
+            animation: jelly 0.6s ease;
+        }
+        
+        /* 答錯時的搖晃動畫 */
+        .card.shake {
+            animation: shake 0.4s ease;
         }
 
-        /* 文字字型大小 */
+        /* 漢字樣式：大字、粗體、帶有故事書感 */
         .word-card {
-            font-size: 24px;
-            font-weight: bold;
-            letter-spacing: 1px;
+            font-size: 26px;
+            font-weight: 700;
+            color: #5d4037;
         }
 
-        /* 圖片放大與置中優化 */
         .image-card {
             width: 100%;
             height: 100%;
@@ -119,58 +151,75 @@
             justify-content: center;
         }
 
-        /* 控制 いらすとや 圖片的大小 */
         .image-card img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain; /* 確保不變形 */
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
         }
 
+        /* 重新開始按鈕：像一塊大餅乾 */
         button {
             width: 100%;
-            padding: 14px;
+            padding: 15px;
+            font-family: 'Noto Sans TC', sans-serif;
             font-size: 18px;
             font-weight: bold;
             cursor: pointer;
             border: none;
-            border-radius: 12px;
-            background-color: #2ecc71;
+            border-radius: 25px;
+            background-color: #ffb37e;
             color: white;
-            box-shadow: 0 4px 6px rgba(46, 204, 113, 0.2);
-            transition: background-color 0.2s;
+            box-shadow: 0 6px 0px #e0925c;
+            transition: all 0.1s ease;
         }
 
         button:active {
-            background-color: #27ae60;
+            transform: translateY(4px);
+            box-shadow: 0 2px 0px #e0925c;
+        }
+
+        /* 果凍彈跳特效 */
+        @keyframes jelly {
+            0% { transform: rotateY(180deg) scale(1); }
+            30% { transform: rotateY(180deg) scale(1.15, 0.85); }
+            40% { transform: rotateY(180deg) scale(0.85, 1.15); }
+            60% { transform: rotateY(180deg) scale(1.05, 0.95); }
+            100% { transform: rotateY(180deg) scale(1); }
+        }
+
+        /* 答錯搖晃特效 */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-6px); }
+            40%, 80% { transform: translateX(6px); }
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>一分鐘讀字：配對遊戲</h1>
+        <h1>✨ 一分鐘讀字配對遊戲 ✨</h1>
 
         <div id="info-bar">
-            <div id="score-panel">得分: <span id="matches-count">0</span> / 6</div>
-            <div id="timer-panel">時間: <span id="timer">0</span> 秒</div>
+            <div id="score-panel">🎈 已找到: <span id="matches-count">0</span> / 6</div>
+            <div id="timer-panel">⏱️ 時間: <span id="timer">0</span> 秒</div>
         </div>
 
         <div id="game-board">
-            <!-- JS 生成 -->
-        </div>
+            </div>
 
-        <button id="restart-btn">重新開始遊戲</button>
+        <button id="restart-btn">🍭 重新開始玩</button>
     </div>
 
     <script>
-        // 這裡直接引用了 いらすとや (Irasutoya) 的官方圖片網址
+        // 使用支援跨網域外連、色彩粉嫩高畫質的卡通/手繪風插圖網址
         const gameData = [
-            { word: '飛鳥', image: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEixA0h_3K9OshnOInKq53F713f0_x7L9180L8E1-yH6fMpxwK69K4q-323p_A6r59Y8q8o6k/s400/bird_tsubame.png' },
-            { word: '小狗', image: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhdNq89Yf6r4_03w5T9JCHM4_k9w23g5n5h8m3-kG9z8o2q1w8k5m7r9p3q/s400/animal_chihuahua.png' },
-            { word: '老師', image: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh6w78gNq8r3m9v6x5C7n8m4t2q9w8_v6m7n8r5kG9z2o1w8k5m7r9p/s400/school_teacher_woman.png' },
-            { word: '護士', image: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi_w8n8r3m9v6x5C7n8m4t2q9w8_v6m7n8r5kG9z2o1w8k5m7r9p/s400/medical_nurse_woman.png' },
-            { word: '星星', image: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj8w8n8r3m9v6x5C7n8m4t2q9w8_v6m7n8r5kG9z2o1w8k5m7r9p/s400/mark_star.png' },
-            { word: '月餅', image: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiw9o8n8r3m9v6x5C7n8m4t2q9w8_v6m7n8r5kG9z2o1w8k5m7r9p/s400/sweets_gekkamei.png' }
+            { word: '飛鳥', image: 'https://cdn-icons-png.flaticon.com/512/785/785116.png' },     // 可愛小鳥
+            { word: '小狗', image: 'https://cdn-icons-png.flaticon.com/512/616/616408.png' },     // 可愛狗狗
+            { word: '老師', image: 'https://cdn-icons-png.flaticon.com/512/1995/1995531.png' },   // 卡通女老師
+            { word: '護士', image: 'https://cdn-icons-png.flaticon.com/512/2304/2304226.png' },   // 卡通護士小姐
+            { word: '星星', image: 'https://cdn-icons-png.flaticon.com/512/1828/1828884.png' },   // 軟萌黃色星星
+            { word: '月餅', image: 'https://cdn-icons-png.flaticon.com/512/3142/3142643.png' }    // 點心月餅
         ];
 
         let cards = [];
@@ -213,7 +262,7 @@
 
                 const front = document.createElement('div');
                 front.classList.add('card-front');
-                front.textContent = '？';
+                front.textContent = '✏️'; // 背面改成小鉛筆圖案
 
                 const back = document.createElement('div');
                 back.classList.add('card-back');
@@ -223,8 +272,16 @@
                     back.textContent = cardData.word;
                 } else {
                     back.classList.add('image-card');
-                    // 渲染 いらすとや 的圖片標籤
-                    back.innerHTML = `<img src="${cardData.image}" alt="${cardData.word}">`;
+                    const img = document.createElement('img');
+                    img.src = cardData.image;
+                    img.alt = cardData.word;
+                    
+                    // 防破圖降級機制
+                    img.onerror = function() {
+                        const fallbacks = { '飛鳥':'🕊️', '小狗':'🐶', '老師':'👨‍🏫', '護士':'👩‍⚕️', '星星':'⭐', '月餅':'🥮' };
+                        back.innerHTML = `<span style="font-size: 46px;">${fallbacks[cardData.word] || '🖼️'}</span>`;
+                    };
+                    back.appendChild(img);
                 }
 
                 card.appendChild(front);
@@ -270,8 +327,8 @@
             if (matchesFound === gameData.length) {
                 clearInterval(timerInterval);
                 setTimeout(() => {
-                    alert(`🎉 太厲害了！你花了 ${secondsElapsed} 秒完成挑戰！`);
-                }, 400);
+                    alert(`🎉 太棒了！你像魔法師一樣，只花了 ${secondsElapsed} 秒就完成了配對！`);
+                }, 500);
             }
 
             resetBoard();
@@ -279,9 +336,14 @@
 
         function unflipCards() {
             lockBoard = true;
+            
+            // 答錯時給予卡片輕微搖晃的反饋
+            firstCard.classList.add('shake');
+            secondCard.classList.add('shake');
+
             setTimeout(() => {
-                firstCard.classList.remove('flip');
-                secondCard.classList.remove('flip');
+                firstCard.classList.remove('flip', 'shake');
+                secondCard.classList.remove('flip', 'shake');
                 resetBoard();
             }, 800);
         }
