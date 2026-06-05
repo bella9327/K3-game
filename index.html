@@ -2,53 +2,84 @@
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>一分鐘讀字記錄紙：配對遊戲</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>一分鐘讀字記錄紙：配對遊戲 (手機優化版)</title>
     <style>
+        * {
+            box-sizing: border-box;
+            /* 防止手機上手指連點時選取到卡片文字 */
+            -webkit-user-select: none;
+            user-select: none;
+            /* 移除手機瀏覽器點擊時的藍色高亮陰影 */
+            -webkit-tap-highlight-color: transparent;
+        }
+
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f0f0f0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f7f9fa;
             margin: 0;
-            padding: 20px;
+            padding: 12px;
+            display: block;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 500px; /* 限制最大寬度，在平板或大螢幕上也不會過度變形 */
+            margin: 0 auto;
+            text-align: center;
         }
 
         h1 {
-            color: #333;
+            color: #2c3e50;
+            font-size: 20px;
+            margin: 10px 0 15px 0;
+        }
+
+        /* 頂部資訊欄 */
+        #info-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #ffffff;
+            padding: 10px 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+
+        #score-panel {
+            font-size: 16px;
+            font-weight: bold;
+            color: #34495e;
+        }
+
+        #timer-panel {
+            font-size: 16px;
+            font-weight: bold;
+            color: #e74c3c;
+        }
+
+        /* 遊戲網格：手機直向推薦 3 欄，讓卡片放到最大 */
+        #game-board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-gap: 10px;
+            perspective: 800px;
             margin-bottom: 20px;
         }
 
-        #game-board {
-            display: grid;
-            grid-template-columns: repeat(4, 150px);
-            grid-gap: 15px;
-            perspective: 1000px; /* 3D 效果 */
-        }
-
         .card {
-            background-color: #fff;
-            color: #fff;
-            width: 150px;
-            height: 150px;
+            background-color: transparent;
+            aspect-ratio: 1 / 1; /* 保持正方形 */
             position: relative;
             transform-style: preserve-3d;
-            transition: transform 0.6s;
+            transition: transform 0.4s ease-out;
             cursor: pointer;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
 
+        /* 翻牌動畫 */
         .card.flip {
             transform: rotateY(180deg);
-        }
-
-        .card.match {
-            background-color: #8fbc8f; /* 配對成功的顏色 */
-            cursor: default;
         }
 
         .card-front, .card-back {
@@ -59,89 +90,109 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 36px;
-            font-weight: bold;
-            border-radius: 10px;
+            border-radius: 12px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.08);
         }
 
+        /* 卡片背面 (蓋牌時) */
         .card-front {
-            background-color: #4CAF50; /* 卡片背面的顏色 */
+            background: linear-gradient(135deg, #3498db, #2980b9);
             color: white;
-            font-size: 60px; /* 卡背顯示一個簡單圖案 */
+            font-size: 32px;
+            font-weight: bold;
         }
 
+        /* 卡片正面 (翻開時) */
         .card-back {
-            background-color: white;
-            color: black;
+            background-color: #ffffff;
+            color: #2c3e50;
             transform: rotateY(180deg);
-            padding: 10px;
-            text-align: center;
+            border: 2px solid #e0e0e0;
+            padding: 4px;
         }
 
+        /* 配對成功樣式 */
+        .card.match .card-back {
+            background-color: #e8f8f5;
+            border-color: #2ecc71;
+            box-shadow: 0 2px 4px rgba(46, 204, 113, 0.2);
+        }
+
+        /* 詞語文字大小優化 */
         .word-card {
-            color: #333;
-            font-size: 40px;
+            font-size: 22px; /* 適合手機閱讀的粗大漢字 */
+            font-weight: bold;
+            letter-spacing: 1px;
+            word-break: break-all;
         }
 
+        /* 圖片/Emoji 放大優化 */
+        .image-card {
+            font-size: 50px; /* 大幅放大 Emoji */
+            line-height: 1;
+        }
+
+        /* 若未來放真正圖片的縮放設定 */
         .image-card img {
-            max-width: 90%;
-            max-height: 90%;
-            border-radius: 5px;
+            width: 90%;
+            height: 90%;
+            object-fit: contain;
         }
 
-        #controls {
-            margin-top: 30px;
-            display: flex;
-            gap: 20px;
-            align-items: center;
-        }
-
+        /* 按鈕優化：大面積方便手機觸控 */
         button {
-            padding: 10px 20px;
+            width: 100%;
+            padding: 14px;
             font-size: 18px;
+            font-weight: bold;
             cursor: pointer;
             border: none;
-            border-radius: 5px;
-            background-color: #008CBA;
+            border-radius: 12px;
+            background-color: #2ecc71;
             color: white;
-            transition: background-color 0.3s;
+            box-shadow: 0 4px 6px rgba(46, 204, 113, 0.2);
+            transition: background-color 0.2s, transform 0.1s;
         }
 
-        button:hover {
-            background-color: #0077a3;
+        button:active {
+            background-color: #27ae60;
+            transform: scale(0.98);
         }
 
-        #score-panel {
-            font-size: 20px;
-            color: #333;
+        /* 小螢幕微調：針對極小手機（如 iPhone SE）進一步優化 */
+        @media (max-width: 360px) {
+            .word-card { font-size: 18px; }
+            .image-card { font-size: 42px; }
+            #game-board { grid-gap: 8px; }
         }
     </style>
 </head>
 <body>
 
-    <h1>一分鐘讀字記錄紙：配對遊戲</h1>
+    <div class="container">
+        <h1>一分鐘讀字：配對遊戲</h1>
 
-    <div id="game-board">
+        <div id="info-bar">
+            <div id="score-panel">得分: <span id="matches-count">0</span> / 6</div>
+            <div id="timer-panel">時間: <span id="timer">0</span> 秒</div>
         </div>
 
-    <div id="controls">
-        <button id="restart-btn">重新開始</button>
-        <div id="score-panel">已配對: <span id="matches-count">0</span> / 10</div>
+        <div id="game-board">
+            </div>
+
+        <button id="restart-btn">重新開始遊戲</button>
     </div>
 
     <script>
-        // 遊戲數據：詞語和其對應的圖片 (使用佔位符圖標)
+        // 為了讓手機畫面不會太擁擠，這裡精選圖中 6 組最適合對比的詞語（共12張牌，3x4排版網格最完美）
+        // 如果想增加到 10 組（20張牌），可以直接在陣列裡補充，畫面會自動改為 3 欄向下延伸。
         const gameData = [
             { word: '飛鳥', image: '🕊️' },
             { word: '小狗', image: '🐶' },
             { word: '老師', image: '👨‍🏫' },
             { word: '護士', image: '👩‍⚕️' },
             { word: '星星', image: '⭐' },
-            { word: '蘋果', image: '🍎' },
-            { word: '月餅', image: '🥮' },
-            { word: '警察', image: '👮' },
-            { word: '太陽', image: '☀️' },
-            { word: '汽車', image: '🚗' }
+            { word: '月餅', image: '🥮' }
         ];
 
         let cards = [];
@@ -149,36 +200,48 @@
         let lockBoard = false;
         let firstCard, secondCard;
         let matchesFound = 0;
+        let timerInterval;
+        let secondsElapsed = 0;
 
         const gameBoard = document.getElementById('game-board');
         const matchesCountSpan = document.getElementById('matches-count');
         const restartBtn = document.getElementById('restart-btn');
+        const timerSpan = document.getElementById('timer');
 
-        // 生成卡片
+        function startTimer() {
+            clearInterval(timerInterval);
+            secondsElapsed = 0;
+            timerSpan.textContent = secondsElapsed;
+            timerInterval = setInterval(() => {
+                secondsElapsed++;
+                timerSpan.textContent = secondsElapsed;
+            }, 1000);
+        }
+
         function initGame() {
-            // 清空舊卡片
             gameBoard.innerHTML = '';
             matchesFound = 0;
             matchesCountSpan.textContent = matchesFound;
+            document.getElementById('score-panel').innerHTML = `得分: <span id="matches-count">0</span> / ${gameData.length}`;
+            
             cards = [];
+            resetBoard();
 
-            // 創建一組漢字卡
+            // 複製漢字卡與圖片卡
             const wordCards = gameData.map(item => ({ ...item, type: 'word' }));
-            // 創建一組圖片卡
             const imageCards = gameData.map(item => ({ ...item, type: 'image' }));
 
-            // 合併並打亂
+            // 合併並隨機打亂排序
             cards = [...wordCards, ...imageCards].sort(() => 0.5 - Math.random());
 
             cards.forEach((cardData, index) => {
                 const card = document.createElement('div');
                 card.classList.add('card');
-                card.dataset.id = cardData.word; // 用詞語作為唯一的配對 ID
-                card.dataset.index = index;
+                card.dataset.id = cardData.word;
 
                 const front = document.createElement('div');
                 front.classList.add('card-front');
-                front.textContent = '?'; // 卡片背面的圖案
+                front.textContent = '？';
 
                 const back = document.createElement('div');
                 back.classList.add('card-back');
@@ -188,82 +251,84 @@
                     back.textContent = cardData.word;
                 } else {
                     back.classList.add('image-card');
-                    // 這裡使用 Emoji 作為圖片佔位符。
-                    // 若要使用實際圖片，請將此行替換為：
-                    // back.innerHTML = `<img src="path/to/${cardData.word}.png" alt="${cardData.word}">`;
+                    // 放大版的 Emoji 圖片
                     back.textContent = cardData.image; 
+                    
+                    // 備用：若日後換成圖片網址，請刪除上面那行並啟用下方這行：
+                    // back.innerHTML = `<img src="images/${cardData.word}.png" alt="${cardData.word}">`;
                 }
 
                 card.appendChild(front);
                 card.appendChild(back);
+                
+                // 手機端使用 click 事件，配上 CSS 的觸控優化已足夠流暢
                 card.addEventListener('click', flipCard);
                 gameBoard.appendChild(card);
             });
+
+            startTimer();
         }
 
-        // 翻轉卡片邏輯
         function flipCard() {
             if (lockBoard) return;
-            if (this === firstCard) return; // 防止點擊同一張卡片
+            if (this === firstCard) return;
 
             this.classList.add('flip');
 
             if (!hasFlippedCard) {
-                // 第一次點擊
                 hasFlippedCard = true;
                 firstCard = this;
                 return;
             }
 
-            // 第二次點擊
             secondCard = this;
             checkForMatch();
         }
 
-        // 檢查是否配對
         function checkForMatch() {
             let isMatch = firstCard.dataset.id === secondCard.dataset.id;
             isMatch ? disableCards() : unflipCards();
         }
 
-        // 配對成功：禁用卡片
         function disableCards() {
             firstCard.removeEventListener('click', flipCard);
             secondCard.removeEventListener('click', flipCard);
             
-            // 添加配對成功的樣式
             firstCard.classList.add('match');
             secondCard.classList.add('match');
 
             matchesFound++;
-            matchesCountSpan.textContent = matchesFound;
+            document.getElementById('matches-count').textContent = matchesFound;
+
+            if (matchesFound === gameData.length) {
+                clearInterval(timerInterval);
+                setTimeout(() => {
+                    alert(`🎉 太棒了！你花了 ${secondsElapsed} 秒完成所有配對！`);
+                }, 300);
+            }
 
             resetBoard();
         }
 
-        // 配對失敗：將卡片翻轉回去
         function unflipCards() {
-            lockBoard = true; // 鎖定面版，防止在翻轉時點擊
+            lockBoard = true;
 
             setTimeout(() => {
                 firstCard.classList.remove('flip');
                 secondCard.classList.remove('flip');
                 resetBoard();
-            }, 1000); // 1秒後翻轉回去
+            }, 800); // 稍微縮短翻回的時間，讓手機節奏更明快
         }
 
-        // 重置變量
         function resetBoard() {
             [hasFlippedCard, lockBoard] = [false, false];
             [firstCard, secondCard] = [null, null];
         }
 
-        // 重新開始
         restartBtn.addEventListener('click', initGame);
-
-        // 初始化遊戲
+        
+        // 首次載入自動初始化
         initGame();
-
     </script>
 </body>
 </html>
