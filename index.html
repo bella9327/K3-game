@@ -262,8 +262,8 @@
 
                 const front = document.createElement('div');
                 front.classList.add('card-front');
-                front.textContent = image: 'https://cdn.phototourl.com/free/2026-06-05-26f085c4-f366-4a50-bfaa-992bd501dba9.jpg' }   
-
+                front.textContent ='👆🏻';//背面改成手指圖案
+    
                 const back = document.createElement('div');
                 back.classList.add('card-back');
 
@@ -327,7 +327,7 @@
             if (matchesFound === gameData.length) {
                 clearInterval(timerInterval);
                 setTimeout(() => {
-                    alert(`🎉 太棒了！你像魔法師一樣，只花了 ${secondsElapsed} 秒就完成了配對！`);
+                    alert(`🎉 太棒了！你只花了 ${secondsElapsed} 秒就完成了配對！`);
                 }, 500);
             }
 
