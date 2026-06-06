@@ -5,177 +5,53 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>中文字詞配對遊戲（人物篇）</title>
     <style>
-        /* 引入 Google 字型：Noto Serif Hong Kong */
         @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+HK:wght@500;700&family=ZCOOL+KuaiLe&display=swap');
 
-        * {
-            box-sizing: border-box;
-            -webkit-user-select: none;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
-        }
+        * { box-sizing: border-box; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
 
         body {
-            /* 套用優雅的宋體 */
-            font-family: 'Noto Serif HK', 'Noto Sans TC', serif;
+            font-family: 'Noto Serif HK', serif;
             background-color: #fbf6ee; 
             background-image: radial-gradient(#f0e5d8 1px, transparent 0);
             background-size: 24px 24px;
-            margin: 0;
-            padding: 10px;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            margin: 0; padding: 10px; min-height: 100vh;
+            display: flex; justify-content: center; align-items: center;
         }
 
-        .container {
-            width: 100%;
-            max-width: 460px;
-            margin: 0 auto;
-            text-align: center;
-        }
+        .container { width: 100%; max-width: 460px; margin: 0 auto; text-align: center; }
 
-        /* 標題保留活潑感，其他文字改用宋體 */
-        h1 {
-            font-family: 'ZCOOL KuaiLe', cursive;
-            color: #6d4c41;
-            font-size: 24px;
-            margin: 5px 0 10px 0;
-            text-shadow: 2px 2px 0px #fff;
-        }
+        h1 { font-family: 'ZCOOL KuaiLe', cursive; color: #6d4c41; font-size: 24px; margin: 5px 0 10px 0; text-shadow: 2px 2px 0px #fff; }
 
-        .level-selector {
-            display: flex;
-            justify-content: space-between;
-            gap: 8px;
-            margin-bottom: 12px;
-        }
+        .level-selector { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
+        .level-btn { flex: 1; padding: 8px 5px; font-size: 14px; font-weight: 700; border-radius: 15px; background-color: #fff9f2; color: #8d6e63; border: 2px solid #dfd3c3; box-shadow: 0 3px 0px #dfd3c3; cursor: pointer; transition: all 0.1s ease; }
+        .level-btn.active { background-color: #aed6f1; color: white; border-color: #85b3d1; box-shadow: 0 3px 0px #85b3d1; transform: translateY(2px); }
 
-        .level-btn {
-            flex: 1;
-            padding: 8px 5px;
-            font-size: 14px;
-            font-weight: 700; /* 宋體加粗更明顯 */
-            border-radius: 15px;
-            background-color: #fff9f2;
-            color: #8d6e63;
-            border: 2px solid #dfd3c3;
-            box-shadow: 0 3px 0px #dfd3c3;
-            cursor: pointer;
-            transition: all 0.1s ease;
-        }
+        #info-bar { display: flex; justify-content: space-between; align-items: center; background-color: #fff9f2; padding: 10px 15px; border-radius: 20px; margin-bottom: 15px; border: 3px dashed #dfd3c3; box-shadow: 0 4px 0px #dfd3c3; font-weight: 700; color: #5d4037; }
 
-        .level-btn.active {
-            background-color: #aed6f1;
-            color: white;
-            border-color: #85b3d1;
-            box-shadow: 0 3px 0px #85b3d1;
-            transform: translateY(2px);
-        }
+        #game-board { display: grid; grid-template-columns: repeat(3, 1fr); grid-gap: 10px; perspective: 1000px; margin-bottom: 20px; }
+        #game-board.grid-4 { grid-template-columns: repeat(4, 1fr); grid-gap: 8px; }
 
-        #info-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #fff9f2;
-            padding: 10px 15px;
-            border-radius: 20px;
-            margin-bottom: 15px;
-            border: 3px dashed #dfd3c3;
-            box-shadow: 0 4px 0px #dfd3c3;
-            font-weight: 700;
-        }
+        .card { background-color: transparent; aspect-ratio: 1 / 1; position: relative; transform-style: preserve-3d; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2); cursor: pointer; }
+        .card.flip { transform: rotateY(180deg); }
 
-        /* 漢字卡片使用宋體，展現文字美感 */
-        .word-card {
-            font-family: 'Noto Serif HK', serif;
-            font-size: 24px;
-            font-weight: 700;
-            color: #5d4037;
-        }
-
-        #game-board {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            grid-gap: 10px;
-            perspective: 1000px;
-            margin-bottom: 20px;
-        }
-
-        #game-board.grid-4 {
-            grid-template-columns: repeat(4, 1fr);
-            grid-gap: 8px;
-        }
-
-        .card {
-            background-color: transparent;
-            aspect-ratio: 1 / 1;
-            position: relative;
-            transform-style: preserve-3d;
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2);
-            cursor: pointer;
-        }
-
-        .card.flip {
-            transform: rotateY(180deg);
-        }
-
-        .card-front, .card-back {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            backface-visibility: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 14px;
-        }
-
-        .card-front {
-            background: url('https://cdn.phototourl.com/free/2026-06-05-26f085c4-f366-4a50-bfaa-992bd501dba9.jpg') no-repeat center center;
-            background-size: cover;
-            border: 3px solid #fff;
-            box-shadow: 0 5px 0px #dfd3c3, 0 8px 12px rgba(0,0,0,0.05);
-        }
-
-        .card-back {
-            background-color: #ffffff;
-            color: #4e342e;
-            transform: rotateY(180deg);
-            border: 3px solid #fff;
-            box-shadow: 0 5px 0px #e0e0e0, 0 8px 12px rgba(0,0,0,0.05);
-            padding: 4px;
-        }
-
-        .card.match .card-back {
-            background-color: #f7fdf9;
-            box-shadow: 0 5px 0px #abebd0;
-        }
+        .card-front, .card-back { width: 100%; height: 100%; position: absolute; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; border-radius: 14px; }
+        .card-front { background: url('https://cdn.phototourl.com/free/2026-06-05-26f085c4-f366-4a50-bfaa-992bd501dba9.jpg') no-repeat center center; background-size: cover; border: 3px solid #fff; box-shadow: 0 5px 0px #dfd3c3, 0 8px 12px rgba(0,0,0,0.05); }
         
-        .card.shake {
-            animation: shake 0.4s ease-in-out;
-        }
+        .card-back { background-color: #ffffff; color: #4e342e; transform: rotateY(180deg); border: 3px solid #fff; box-shadow: 0 5px 0px #e0e0e0, 0 8px 12px rgba(0,0,0,0.05); padding: 5px; }
+        .card.match .card-back { background-color: #f7fdf9; box-shadow: 0 5px 0px #abebd0; }
+        
+        .word-card { font-size: 22px; font-weight: 700; }
+        .image-card { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+        .image-card img { max-width: 85%; max-height: 85%; object-fit: contain; pointer-events: none; }
 
-        .restart-btn {
-            width: 100%;
-            padding: 14px;
-            font-family: 'Noto Serif HK', sans-serif;
-            font-size: 18px;
-            font-weight: 700;
-            cursor: pointer;
-            border: none;
-            border-radius: 25px;
-            background-color: #ffb37e;
-            color: white;
-            box-shadow: 0 5px 0px #e0925c;
-        }
+        .restart-btn { width: 100%; padding: 14px; font-family: 'Noto Serif HK', sans-serif; font-size: 18px; font-weight: 700; cursor: pointer; border: none; border-radius: 25px; background-color: #ffb37e; color: white; box-shadow: 0 5px 0px #e0925c; }
 
         @keyframes shake {
             0%, 100% { transform: rotateY(180deg) translateX(0); }
             20%, 60% { transform: rotateY(180deg) translateX(-6px); }
             40%, 80% { transform: rotateY(180deg) translateX(6px); }
         }
+        .card.shake { animation: shake 0.4s ease-in-out; }
     </style>
 </head>
 <body>
@@ -250,8 +126,8 @@
                 card.classList.add('card');
                 card.dataset.id = data.word;
                 
-                // 這裡簡化結構以符合字體設定
-                card.innerHTML = `<div class="card-front"></div><div class="card-back ${data.image ? 'image-card' : 'word-card'}">${data.image ? `<img src="${data.image}">` : data.word}</div>`;
+                const backContent = data.image ? `<div class="image-card"><img src="${data.image}" alt="${data.word}"></div>` : `<div class="word-card">${data.word}</div>`;
+                card.innerHTML = `<div class="card-front"></div><div class="card-back">${backContent}</div>`;
                 card.addEventListener('click', flipCard);
                 board.appendChild(card);
             });
@@ -269,7 +145,7 @@
                 secondCard.classList.add('match');
                 matchesFound++;
                 document.getElementById('matches-count').textContent = matchesFound;
-                if(matchesFound === currentPairsCount) { clearInterval(timerInterval); alert('完成！'); }
+                if(matchesFound === currentPairsCount) { clearInterval(timerInterval); setTimeout(() => alert('🎉 太棒了！你完成了遊戲！'), 500); }
                 resetBoard();
             } else {
                 firstCard.classList.add('shake');
