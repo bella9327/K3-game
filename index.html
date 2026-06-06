@@ -180,7 +180,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>✨ 一分鐘中文字詞配對遊戲 ✨</h1>
+        <h1>✨ 中文字詞配對遊戲（人物篇） ✨</h1>
         <div class="level-selector">
             <button class="level-btn active" onclick="changeLevel(6, this)">🌱 簡單 (6對)</button>
             <button class="level-btn" onclick="changeLevel(8, this)">🌲 普通 (8對)</button>
@@ -196,16 +196,16 @@
 
     <script>
         const fullGameData = [
-            { word: '朋友', image: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjEB932hVgaKyqyxeyF06KSDpf1rdTcb0ThAPck3ITd2-YlUkv1lEg5LP31-hrbM803OSOik5fgjSWVU3rIvq137LvTet6dAKjoIZk_cMvIHitiYuLmmFES0lRBe7xeD2cUIyOkadngF1IH/s800/bird_aoitori_bluebird.png' },
-            { word: '外婆', image: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEitxnXh3BCHXlUOIPJdO1y51fEPdGCGf9bImEnIUVo_uPy5ECws2w1iAI2wrDs8Sc0oVbtdnYZvFG5UzykV-qvcWamD-Wyj6MOvh6UCTXHPH-5Xf-B5tH-8BqYSvw4roWyud7AgdE_3eXc/s800/pet_omocha_inu.png' },
+            { word: '朋友', image: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhpL6ExStn7guf96fZAWMqCPvR5p3iZuoMEXjtWCxE6hAEv2jWu26YuglUr_giXiuis2uPZMK4rwx_xzNWrrsMDMK5xaoutOPRcBjb8-krPEJ1CQEU7g-_xRwezvQ20lufpmUsScZpkadY/s800/friends_man.png' },
+            { word: '外婆', image: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEizq8z9NXOVhHLZvbyZDdhS89-6sLmnDgfktg6sb7fMJ-D6lYp1_YcsYIwonDgZDdBFeYvceh31c7pejqfwVWNQpgl007ZSqdVVOvbeJAqeLnXDVucqVHlyjdoTbq1gNkYbmbvxrEdMR5c/s800/obaasan.png' },
             { word: '老師', image: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhm_E-H-K-_FgN2faRN8GBGyLGYlBRd7ableXu-UkGQQHSUai1QJpssQsdbjG_JgTOsqL0HB5IuINGRf4jtaT5PmprKYOt0fWzFi6THUTi2-JfCDFdHbtnSCRRiWwrlrcTBq-1MMPVzedw/s800/kid_job_girl_teacher.png' },
             { word: '護士', image: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi0Xif0qqyS8Xu38KMrotkfwCIJlmgjJR5AG9h81a7ZLd9k6qJRgNht3JRXuS7WZwvrCH113634NAm-VUT51gm3C96ieLUcQ_jcds5tkPTOKRhLJ3KStuAKECoi9DscMW8r6TDNwKTlxCs/s800/nurse03_smile.png' },
-            { word: '學生', image: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjaSRety8gtS7fw4SZ6uMq1z3J9QNT8Lm7S1MtEKHhB3D0nOvNIPmSo72EhaaWLgF6GnhQNOqyFKG6XL2ceUwwP4bAKJiqk4ngiDbjfgIrBLTuKVGhMJCp8yE9QwjeirNOOOg35IYJpNPJY/s800/small_star7_yellow.png' },
-            { word: '姊妹', image: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhT_JHjk1x9QNTcDwrwF3gdhfaK6Scoso10UeoazCdIXYGpn412_2UYSn79CQPrKl0bBs0N9dxQ5TWuVrtvY9kkQUF4dbM8W1S8nBfaHsaSVltIykcDANCHo0JVXXTRGNk1EovoA8IR9n-C/s800/sweets_geppei.png' },
-            { word: '父母', image: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgo7ZgN_pCAtZ7Xp8eN7Nl9fW8eOa9_vXh_M-mH5n9z2oIw6k4m6r9p/s400/animal_zou.png' },
-            { word: '司機', image: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi0w8n8r3m9v6x5C7n8m4t2q9w8_v6m7n8r5kG9z2o1w8k5m7r9p/s400/fruit_apple.png' },
-            { word: '警察', image: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj0w8n8r3m9v6x5C7n8m4t2q9w8_v6m7n8r5kG9z2o1w8k5m7r9p/s400/job_keisatsukan_man.png' },
-            { word: '女孩', image: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj0w8n8r3m9v6x5C7n8m4t2q9w8_v6m7n8r5kG9z2o1w8k5m7r9p/s400/car_sedan_red.png' }
+            { word: '學生', image: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhZD_0oZPdff5EXGhJq7npkiQcgRSOqhfJBAt1MwKX_T05RwhTiTTBjF4Z2cDbvd3hyoneBFlxFlMPrOv02XOPkkgDNzeyX9HfYanXuNH3hmbk2QZldkl6dfcUDMypva7y2d_BkWy1HtyOm/s1600/school_randoseru_boy.png' },
+            { word: '姊妹', image: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiYQxf5gU-yDJHxgjCS9IywQutKOSOS6mevosbgL2eTTb1rnXO7PBcBdDEjVqKJHLGJWHxkYmY0EVIqUlGAmMjHUqAG3BfpodKtUGO7J_xgcd3g5pJwRxW9Y0PgB_9eO0_hvKBO2rhiXP4/s800/family_shimai.png' },
+            { word: '父母', image: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhVSMnv707L90ziM6KIJkVkmtuBo8qjYfCDDgV1rs_u1pmgRzCR-MH6RUN8umsdoQmS96ne4ekES5M48mqBXCx82NIFQmsWSs39tsgXve1zS-phTYFjpvxlrH_YoTkJMCMFmYOXml8Q1UrC/s800/family_fusen_boy.png' },
+            { word: '司機', image: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjiHI59-eQIPditx8jvP8zMMyFJoaoPEAHVpKYcmfQTDZS2Nr-wL3ac4JnBkJ1rtj02rexEzolZnWsD8Ap1ybLS4OYdYPB3WNsjjWPHIQiiNmOwiF2diE8eG_pkhYRM5QCG9y43CxQ3028/s800/taxi_driver_untensyu3.png' },
+            { word: '警察', image: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgbDxoBV3A5o2YXx4DuYfr5yYaYrB2JqdaIFQRZ8JxXk7jZ4kjxYw00gnHulrXABfVk3BOWcwAmuW3Safx1-tyRl_lcejQ-2VN-KPuZqIZZ8gc5lOGbQW7L_uotROIa4OZjV-rAwBb3xrjM/s800/police_shirt_man1_young.png' },
+            { word: '女孩', image: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiuRI1GFywg8s9GfBJVwKECn1Slo9qHBZOAPis1Cu2brt9L78XV9ch-__pl5Y8zP_OQL5E7g3T1WPI4gKR6h-cdPV6lx-c6hBbuEgw3wWxX9YbNqUtCPUxp6Ew2P7pG8DCy75l_QyCsoKY/s800/girl_23.png' }
         ];
 
         let currentPairsCount = 6;
